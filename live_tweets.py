@@ -35,7 +35,6 @@ with st.empty():
     query = Query().sql(sql).create()
     col = [h["name"] for h in query.header()]
     def update_row(row,name):
-        print(row)
         data = {}
         for i, f in enumerate(col):
             data[f] = row[i]
@@ -57,5 +56,3 @@ with st.empty():
         on_completed=lambda: query.stop(),
     )
     query.cancel().delete()
-
-st.write(f"Only the recent {MAX_ROW*10} rows are shown. You can refresh the page to view the latest events.")
