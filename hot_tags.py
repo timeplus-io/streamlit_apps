@@ -14,7 +14,7 @@ with col_img:
 with col_txt:
     st.title("Timeplus Real-time Insights for Twitter")
 with col_link:
-    st.markdown("[Source Code](https://github.com/timeplus-io/streamlit_apps/blob/main/hot_tags.py) | [Tweets for timeplus](https://share.streamlit.io/timeplus-io/github_liveview/develop/repos_to_follow.py) | [About Timeplus](https://timeplus.com)", unsafe_allow_html=True)
+    st.markdown("[Source Code](https://github.com/timeplus-io/streamlit_apps/blob/main/hot_tags.py) | [Tweets for timeplus](https://share.streamlit.io/timeplus-io/streamlit_apps/main/live_tweets.py) | [About Timeplus](https://timeplus.com)", unsafe_allow_html=True)
     
 env = (
     Env().schema(st.secrets["TIMEPLUS_SCHEMA"]).host(st.secrets["TIMEPLUS_HOST"]).port(st.secrets["TIMEPLUS_PORT"])
