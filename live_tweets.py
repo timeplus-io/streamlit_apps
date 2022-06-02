@@ -40,7 +40,7 @@ with st.empty():
             data[f] = row[i]
             #hack show first column as more friendly datetime diff
             if(i==0):
-                minutes=divmod((datetime.datetime.utcnow()-datetime.datetime.strptime(row[i],"%Y-%m-%dT%H:%M:%S.000Z")).total_seconds(),60)
+                minutes=divmod((pytz.utc.localize(datetime.datetime.utcnow())-row[i]).total_seconds(),60)
                 data[f]=f"{row[i]} ({int(minutes[0])} min {int(minutes[1])} sec ago)"
 
         df = pd.DataFrame([data], columns=col)
