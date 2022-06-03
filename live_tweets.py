@@ -25,9 +25,9 @@ st.header("You can post a tweet with #timeplus in Twitter web site or app. It wi
 MAX_ROW=10
 st.session_state.rows=0
 sql="""
-SELECT created_at AS time,author_id AS `from user id`,lang,text AS tweet,
-  multi_if(multi_search_any(text,['good','great','awesome','amazing','fast','powerful']), 'positive',
-           multi_search_any(text,['bad','slow','hard']), 'negative','neutral') as sentiment
+SELECT created_at AS time,author:name AS author,lang,text AS tweet,
+  multi_if(multi_search_any(lower(text),['good','great','awesome','amazing','fast','powerful']), 'positive',
+           multi_search_any(lower(text),['bad','slow','hard']), 'negative','neutral') as sentiment
 FROM tweets_timeplus SETTINGS seek_to='-1h'
 """
 st.code(sql, language="sql")
