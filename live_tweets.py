@@ -28,7 +28,7 @@ sql="""
 SELECT created_at AS time,concat(author:name,' @',author:username) AS from,lang,text AS tweet,
   multi_if(multi_search_any(lower(text),['good','great','awesome','amazing','fast','powerful']), 'positive',
            multi_search_any(lower(text),['bad','slow','hard']), 'negative','neutral') as sentiment
-FROM tweets_timeplus SETTINGS seek_to='-1h'
+FROM tweets_timeplus WHERE time>date_sub(now(),1h) SETTINGS seek_to='-1h'
 """
 st.code(sql, language="sql")
 with st.empty():

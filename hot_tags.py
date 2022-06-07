@@ -7,12 +7,12 @@ from PIL import Image
 from timeplus import *
 
 st.set_page_config(layout="wide")
-col_img, col_txt, col_link = st.columns([1,10,5])
+col_img, col_txt, col_link = st.columns([1,1,5])
 with col_img:
     image = Image.open("detailed-analysis@2x.png")
     st.image(image, width=100)
 with col_txt:
-    st.title("Timeplus Real-time Insights for Twitter")
+    st.title("")
 with col_link:
     st.markdown("[Source Code](https://github.com/timeplus-io/streamlit_apps/blob/main/hot_tags.py) | [Tweets for timeplus](https://share.streamlit.io/timeplus-io/streamlit_apps/main/live_tweets.py) | [About Timeplus](https://timeplus.com)", unsafe_allow_html=True)
     
@@ -22,9 +22,11 @@ env = (
     .audience(st.secrets["TIMEPLUS_AUDIENCE"]).client_id("TIMEPLUS_CLIENT_ID").client_secret("TIMEPLUS_CLIENT_SECRET")
 )
 
+st.header("Timeplus Real-time Insights for Twitter")
 sql="""
-WITH cte AS (SELECT extract(text,'.*#(\\w+) .*') AS tag FROM twitter WHERE length(tag)>0)
-SELECT top_k(tag,10) FROM cte SETTINGS seek_to='-1h'
+WITH cte AS (SELECT extract(text,'.*#(\\w+) .*') AS tag 
+FROM twitter WHERE length(tag)>0)
+SELECT top_k(tag,10) FROM cte EMIT PERIODIC 1s
 """
 st.code(sql, language="sql")
 query = Query().sql(sql).create()
