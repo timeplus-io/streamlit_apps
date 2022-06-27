@@ -4,15 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-streamlit = "==1.9.2"
+streamlit = "==1.10.0"
 streamlit-autorefresh = "==0.0.1"
 river = "==0.11.0"
 requests = "==2.27.1"
 websocket-client = "==1.3.2"
 loguru = "==0.6.0"
 Rx = "==3.2.0"
-timeplus = "*"
-protobuf = "==3.19.0"
+timeplus = "==0.1.7"
+protobuf = "~=3.19.0"
 
 [dev-packages]
 

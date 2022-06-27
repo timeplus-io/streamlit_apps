@@ -16,9 +16,7 @@ with col_link:
     st.markdown("[Source Code](https://github.com/timeplus-io/streamlit_apps/blob/main/live_tweets.py) | [Hot topics](https://share.streamlit.io/timeplus-io/streamlit_apps/main/hot_tags.py) | [About Timeplus](https://timeplus.com)", unsafe_allow_html=True)
     
 env = (
-    Env().schema(st.secrets["TIMEPLUS_SCHEMA"]).host(st.secrets["TIMEPLUS_HOST"]).port(st.secrets["TIMEPLUS_PORT"])
-    .token(st.secrets["TIMEPLUS_TOKEN"])
-    .audience(st.secrets["TIMEPLUS_AUDIENCE"]).client_id("TIMEPLUS_CLIENT_ID").client_secret("TIMEPLUS_CLIENT_SECRET")
+    Env().schema(st.secrets["TIMEPLUS_SCHEMA"]).host(st.secrets["TIMEPLUS_HOST"]).port(st.secrets["TIMEPLUS_PORT"]).api_key(st.secrets["TIMEPLUS_API_KEY"])
 )
 
 st.header("You can post a tweet with #timeplus in Twitter web site or app. It will show up here in 15 seconds.")
