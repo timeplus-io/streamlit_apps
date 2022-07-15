@@ -14,13 +14,13 @@ with col_img:
 with col_txt:
     st.title("")
 with col_link:
-    st.markdown("[Source Code](https://github.com/timeplus-io/streamlit_apps/blob/main/hot_tags.py) | [Tweets for timeplus](https://share.streamlit.io/timeplus-io/streamlit_apps/main/live_tweets.py) | [About Timeplus](https://timeplus.com)", unsafe_allow_html=True)
+    st.markdown("[Source Code](https://github.com/timeplus-io/streamlit_apps/blob/main/hot_tags.py)", unsafe_allow_html=True)
     
 env = (
     Env().schema(st.secrets["TIMEPLUS_SCHEMA"]).host(st.secrets["TIMEPLUS_HOST"]).port(st.secrets["TIMEPLUS_PORT"]).api_key(st.secrets["TIMEPLUS_API_KEY"])
 )
 
-st.header("Timeplus Real-time Insights for Twitter")
+st.header("Real-time Insights for Twitter")
 sql="""
 WITH cte AS (SELECT extract(text,'.*#(\\w+) .*') AS tag 
 FROM twitter WHERE length(tag)>0 SETTINGS seek_to='earliest')
