@@ -18,7 +18,7 @@ with col_link:
     st.markdown("[Source Code](https://github.com/timeplus-io/streamlit_apps/blob/main/pages/201_%F0%9F%92%BB_repos_to_follow.py)", unsafe_allow_html=True)
 
 env = (
-    Env().schema(st.secrets["TIMEPLUS_SCHEMA"]).host(st.secrets["TIMEPLUS_HOST"]).port(st.secrets["TIMEPLUS_PORT"]).api_key(st.secrets["TIMEPLUS_API_KEY"])
+    Env().schema(st.secrets["TIMEPLUS_SCHEMA"]).host(st.secrets["TIMEPLUS_HOST"]).port(st.secrets["TIMEPLUS_PORT"]).tenant(st.secrets["TIMEPLUS_TENANT"]).api_key(st.secrets["TIMEPLUS_API_KEY"])
 )
 
 sql="SELECT top_k(repo,10) FROM github_events EMIT LAST 6m"
