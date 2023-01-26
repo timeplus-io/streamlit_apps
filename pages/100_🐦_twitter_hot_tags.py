@@ -22,9 +22,9 @@ env = (
 
 st.header("Real-time Insights for Twitter")
 sql="""
-WITH cte AS (SELECT extract(text,'.*#(\\w+) .*') AS tag 
-FROM twitter WHERE length(tag)>0 SETTINGS seek_to='earliest')
-SELECT top_k(tag,10) FROM cte EMIT PERIODIC 1s
+WITH tags AS (SELECT extract(text,'.*#(\\w+) .*') AS tag 
+FROM twitter WHERE _tp_time>'1970-1-1' AND length(tag)>0)
+SELECT top_k(tag,10) FROM tags EMIT PERIODIC 1s
 """
 st.code(sql, language="sql")
 query = Query().sql(sql).create()

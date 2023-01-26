@@ -19,14 +19,14 @@ env = (
     Env().schema(st.secrets["TIMEPLUS_SCHEMA"]).host(st.secrets["TIMEPLUS_HOST"]).port(st.secrets["TIMEPLUS_PORT"]).tenant(st.secrets["TIMEPLUS_TENANT"]).api_key(st.secrets["TIMEPLUS_API_KEY"])
 )
 
-st.header("You can post a tweet with #timeplus in Twitter web site or app. It will show up here in 15 seconds.")
+st.header("You can post a tweet with #StreamProcessing in Twitter web site or app. It will show up here in 15 seconds.")
 MAX_ROW=10
 st.session_state.rows=0
 sql="""
 SELECT created_at AS time,concat(author:name,' @',author:username) AS from,lang,text AS tweet,
   multi_if(to_bool(multi_search_any(lower(text),['good','great','awesome','amazing','fast','powerful'])), 'positive',
            to_bool(multi_search_any(lower(text),['bad','slow','hard'])), 'negative','neutral') as sentiment
-FROM tweets_timeplus WHERE time>date_sub(now(),1h) SETTINGS seek_to='-1h'
+FROM tweets_sp WHERE time>now()-1h
 """
 st.code(sql, language="sql")
 with st.empty():
