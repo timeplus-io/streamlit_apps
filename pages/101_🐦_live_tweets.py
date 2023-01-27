@@ -24,9 +24,9 @@ MAX_ROW=10
 st.session_state.rows=0
 sql="""
 SELECT created_at AS time,concat(author:name,' @',author:username) AS from,lang,text AS tweet,
-  multi_if(to_bool(multi_search_any(lower(text),['good','great','awesome','amazing','fast','powerful'])), 'positive',
-           to_bool(multi_search_any(lower(text),['bad','slow','hard'])), 'negative','neutral') as sentiment
-FROM tweets_sp WHERE _tp_time>now()-1h
+  multi_if(multi_search_any(lower(text),['good','great','awesome','amazing','fast','powerful',':)']), 'positive',
+           multi_search_any(lower(text),['bad','slow','hard']), 'negative','neutral') as sentiment
+FROM tweets_sp WHERE _tp_time>now()-1d
 """
 st.code(sql, language="sql")
 with st.empty():
