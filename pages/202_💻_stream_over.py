@@ -1,6 +1,5 @@
 import streamlit as st
 import time,datetime,pytz,os,json
-from rx import operators as ops
 import pandas as pd
 import altair as alt
 from PIL import Image
@@ -17,9 +16,20 @@ with col_txt:
 with col_link:
     st.markdown("[Source Code](https://github.com/timeplus-io/streamlit_apps/blob/main/pages/202_%F0%9F%92%BB_stream_over.py)", unsafe_allow_html=True)
 
-env = (
-    Env().schema(st.secrets["TIMEPLUS_SCHEMA"]).host(st.secrets["TIMEPLUS_HOST"]).port(st.secrets["TIMEPLUS_PORT"]).tenant(st.secrets["TIMEPLUS_TENANT"]).api_key(st.secrets["TIMEPLUS_API_KEY"])
-)
+env = Environment().address(st.secrets["TIMEPLUS_HOST"]).apikey(st.secrets["TIMEPLUS_API_KEY"]).workspace(st.secrets["TIMEPLUS_TENANT"])
+
+# a wrapper to run batch SQL, return headers and rows
+def batchQuery(bathSQL):
+    q=Query(env=env).sql(query=bathSQL).create()
+    header=q.metadata()["result"]["header"]
+    rows=[]
+    for event in q.result():
+        if event.event != "metrics" and event.event != "query":
+            for row in json.loads(event.data):
+                rows.append(row)
+    q.cancel()
+    q.delete()
+    return header,rows
 
 st.header('Event count: today vs yesterday')
 sql_yesterday="""WITH cte AS( SELECT group_array(time) AS timeArray, moving_sum(cnt) AS cntArray FROM 
@@ -34,15 +44,15 @@ st.markdown('<font color=#52FFDB>green line: today</font>',unsafe_allow_html=Tru
 st.code(sql2, language="sql")
 
 # draw line for yesterday, 24 hours
-result=Query().execSQL(sql_yesterday,100000)
-col = [h["name"] for h in result["header"]]
-df = pd.DataFrame(result["data"], columns=col)
+result=batchQuery(sql_yesterday)
+col = [h["name"] for h in result[0]]
+df = pd.DataFrame(result[1], columns=col)
 chart_yesterday = alt.Chart(df).mark_line(point=alt.OverlayMarkDef()).encode(x='time:T',y='cnt:Q',tooltip=['cnt',alt.Tooltip('time:T',format='%H:%M')],color=alt.value('#D53C97'))
 
 # draw half line for today
 sql_today_til_now="""WITH cte AS(SELECT group_array(time) AS timeArray, moving_sum(cnt) AS cntArray FROM (SELECT window_end AS time,count(*) AS cnt FROM tumble(table(github_events),10s) WHERE _tp_time > date_sub(now(),6m) GROUP BY window_end ORDER BY time))SELECT t.1 AS time, t.2 AS cnt FROM (SELECT array_join(array_zip(timeArray,cntArray)) AS t FROM cte)"""
-result=Query().execSQL(sql_today_til_now,1000000)
-result_data=result["data"]
+result=batchQuery(sql_today_til_now)
+result_data=result[1]
 df = pd.DataFrame(result_data, columns=['time','cnt'])
 chart_today_til_now = alt.Chart(df).mark_line(point=alt.OverlayMarkDef()).encode(x='time:T',y='cnt:Q',tooltip=['cnt',alt.Tooltip('time:T',format='%H:%M')],color=alt.value('#52FFDB'))
 
@@ -53,7 +63,7 @@ with chart_st:
 # draw second half of the line for upcoming data
 # cache the last count in this result
 last_cnt=result_data.pop()[1]
-query = Query().sql(sql2).create()
+query = Query(env=env).sql(query=sql2).create()
 def update_row(row):
     try:
         rows=[]
@@ -67,10 +77,20 @@ def update_row(row):
         with chart_st:
             st.error(f"Got an error while rendering chart. Please refresh the page.{err=}, {type(err)=}")
             query.cancel().delete()
-query.get_result_stream().pipe(ops.take(600)).subscribe(
-    on_next=lambda i: update_row(i),
-    on_error=lambda e: print(f"error {e}"),
-    on_completed=lambda: query.stop(),
-)
-query.cancel().delete()
+
+# iterate query result
+limit = 600
+count = 0
+for event in query.result():
+    if event.event != "metrics":
+        for row in json.loads(event.data):
+            update_row(row)
+            count += 1
+            if count >= limit:
+                break
+        # break the outer loop too    
+        if count >= limit:
+            break            
+query.cancel()
+query.delete()
 

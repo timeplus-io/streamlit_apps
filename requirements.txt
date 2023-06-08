@@ -1,9 +1,4 @@
-streamlit==1.19.0
+streamlit==1.23.1
 streamlit_autorefresh==0.0.1
-river==0.15.0
-requests==2.28.2
-websocket-client==1.5.1
-rx==3.2.0
-loguru==0.6.0
-timeplus==0.2.0
-protobuf~=3.19.0
+loguru==0.7.0
+timeplus==1.2.1
