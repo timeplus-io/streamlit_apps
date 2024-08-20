@@ -4,7 +4,7 @@ import altair as alt
 from PIL import Image
 import json
 
-from timeplus import *
+from timeplus import Query, Environment
 
 st.set_page_config(layout="wide")
 col_img, col_txt, col_link = st.columns([1,8,5])
@@ -36,8 +36,8 @@ for event in query.result():
             count += 1
             if count >= limit:
                 break
-        # break the outer loop too    
+        # break the outer loop too
         if count >= limit:
-            break            
+            break
 query.cancel()
 query.delete()

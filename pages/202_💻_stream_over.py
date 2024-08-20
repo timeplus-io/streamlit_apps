@@ -4,7 +4,7 @@ import pandas as pd
 import altair as alt
 from PIL import Image
 
-from timeplus import *
+from timeplus import Query, Environment
 
 st.set_page_config(layout="wide")
 col_img, col_txt, col_link = st.columns([1,8,5])
@@ -32,7 +32,7 @@ def batchQuery(bathSQL):
     return header,rows
 
 st.header('Event count: today vs yesterday')
-sql_yesterday="""WITH cte AS( SELECT group_array(time) AS timeArray, moving_sum(cnt) AS cntArray FROM 
+sql_yesterday="""WITH cte AS( SELECT group_array(time) AS timeArray, moving_sum(cnt) AS cntArray FROM
       (SELECT date_add(window_end,1d) AS time,count(*) AS cnt FROM tumble(table(github_events),10s) WHERE _tp_time BETWEEN date_sub(now(),1446m) AND date_sub(now(),1436m) GROUP BY window_end ORDER BY time))
 SELECT t.1 AS time, t.2 AS cnt FROM (SELECT array_join(array_zip(timeArray,cntArray)) AS t FROM cte)
 """
@@ -88,9 +88,8 @@ for event in query.result():
             count += 1
             if count >= limit:
                 break
-        # break the outer loop too    
+        # break the outer loop too
         if count >= limit:
-            break            
+            break
 query.cancel()
 query.delete()
-

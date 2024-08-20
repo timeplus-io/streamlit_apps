@@ -4,7 +4,7 @@ import pandas as pd
 import altair as alt
 from PIL import Image
 
-from timeplus import *
+from timeplus import Query, Environment
 
 st.set_page_config(layout="wide")
 col_img, col_txt, col_link = st.columns([1,8,5])
@@ -62,7 +62,7 @@ def show_table_for_query(sql,table_name,row_cnt):
                 count += 1
                 if count >= limit:
                     break
-            # break the outer loop too    
+            # break the outer loop too
             if count >= limit:
                 break
     query.cancel()
@@ -72,7 +72,7 @@ col1, col2, col3 = st.columns([3,3,1])
 
 with col1:
     st.header('New events every minute')
-    sql="""SELECT window_end AS time,count() AS count from tumble(table(github_events),1m) 
+    sql="""SELECT window_end AS time,count() AS count from tumble(table(github_events),1m)
 WHERE _tp_time > date_sub(now(), 2h) GROUP BY window_end"""
     st.code(sql, language="sql")
     result=batchQuery(sql)
@@ -87,10 +87,10 @@ WHERE _tp_time > date_sub(now(), 2h) GROUP BY window_end"""
 with col2:
     #st.header('New repos')
     #show_table_for_query("""SELECT created_at,actor,repo,json_extract_string(payload,'master_branch') AS branch \nFROM github_events WHERE type='CreateEvent'""",'new_repo',3)
-    
+
     st.header('Default branch for new repos')
     sql="""SELECT payload:master_branch AS branch,count(*) AS cnt
-FROM table(github_events) WHERE _tp_time>date_sub(now(),1h) AND type='CreateEvent' 
+FROM table(github_events) WHERE _tp_time>date_sub(now(),1h) AND type='CreateEvent'
 GROUP BY branch ORDER BY cnt DESC LIMIT 3"""
     st.code(sql, language="sql")
     result=batchQuery(sql)
@@ -103,7 +103,7 @@ GROUP BY branch ORDER BY cnt DESC LIMIT 3"""
 
     st.header('Hot repos')
     sql="""SELECT max(created_at) AS followed_at, repo, count(distinct actor) AS new_followers
-FROM table(github_events) WHERE _tp_time>date_sub(now(),10m) AND type ='WatchEvent' 
+FROM table(github_events) WHERE _tp_time>date_sub(now(),10m) AND type ='WatchEvent'
 GROUP BY repo ORDER BY new_followers DESC LIMIT 3
 """
     show_table_for_query(sql,'star_table',3)
@@ -137,7 +137,7 @@ with col3:
                     count += 1
                     if count >= limit:
                         break
-                # break the outer loop too    
+                # break the outer loop too
                 if count >= limit:
                     break
         query.cancel()

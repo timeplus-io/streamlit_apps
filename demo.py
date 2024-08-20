@@ -21,6 +21,6 @@ st.markdown(
     - Check out [timeplus.com](https://timeplus.com)
     - Jump into our [documentation](https://docs.timeplus.com)
     - Ask a question in our [community
-        slack](https://join.slack.com/t/timepluscommunity/shared_invite/zt-14nymxet0-9_Hxszyi5fXUL0Ra_lI~lw)
+        slack](https://timeplus.com/slack)
 """
 )
